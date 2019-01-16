@@ -3,7 +3,7 @@
 The MicroPython project
 =======================
 <p align="center">
-  <img src="https://raw.githubusercontent.com/micropython/micropython/master/logo/upython-with-micro.jpg" alt="MicroPython Logo"/>
+  <img src="https://open-isa.org/wp-content/uploads/2018/11/orderHero.png" alt="MicroPython Logo"/>
 </p>
 
 This is the MicroPython project, which aims to put an implementation
@@ -34,11 +34,7 @@ Major components in this repository:
   core library.
 - mpy-cross/ -- the MicroPython cross-compiler which is used to turn scripts
   into precompiled bytecode.
-- ports/unix/ -- a version of MicroPython that runs on Unix.
-- ports/stm32/ -- a version of MicroPython that runs on the PyBoard and similar
-  STM32 boards (using ST's Cube HAL drivers).
-- ports/minimal/ -- a minimal MicroPython port. Start with this if you want
-  to port MicroPython to another microcontroller.
+- ports/vega-pulpino/ -- A minimal example of Micropython for RISCV
 - tests/ -- test framework and test scripts.
 - docs/ -- user documentation in Sphinx reStructuredText format. Rendered
   HTML documentation is available at http://docs.micropython.org.
@@ -62,40 +58,34 @@ The subdirectories above may include READMEs with additional info.
 "make" is used to build the components, or "gmake" on BSD-based systems.
 You will also need bash, gcc, and Python (at least 2.7 or 3.3).
 
-The Unix version
+The VEGA board version
 ----------------
 
-The "unix" port requires a standard Unix environment with gcc and GNU make.
-x86 and x64 architectures are supported (i.e. x86 32- and 64-bit), as well
-as ARM and MIPS. Making full-featured port to another architecture requires
-writing some assembly code for the exception handling and garbage collection.
-Alternatively, fallback implementation based on setjmp/longjmp can be used.
+The "vega-pulpino" port requires the Vega-SDK (https://open-isa.org/downloads/) 
+under installers, you can choose either windows or linux. Windows has been untested.
+The Makefile assumes the SDK is placed under /opt/VEGA_SDK but this can be overwritten
+with VEGA_SDK = ...
 
-To build (see section below for required dependencies):
+The OpenSDA does not seem to flash a .bin so all instructions will assume an external
+debugger. The supplied cfg uses an altera-usb blaster which can be obtained easily.
 
-    $ git submodule update --init
-    $ cd ports/unix
+If you do not have a toolchain setup and would like to try, find a precompiled elf here:
+https://github.com/AaronKel/micropython-vega/releases/tag/0.1
+
+To build:
+
+    $ cd ports/vega-pulpino
+    $ VEGA_SDK = <LOCATION OF VEGA SDK>
     $ make
 
-Then to give it a try:
+Then to give it a try (Each $ is a different terminal - Steps 1 and 2 need only be performed once):
 
-    $ ./micropython
+    $ openocd -f rv32m1_ri5cy.cfg
+    $ riscv32-unknown-elf-gdb micropython.elf
+    >>> target remote:3333
+    >>> load
+    $ sudo screen /dev/ttyACM0 115200
     >>> list(5 * x + y for x in range(10) for y in [4, 2, 1])
-
-Use `CTRL-D` (i.e. EOF) to exit the shell.
-Learn about command-line options (in particular, how to increase heap size
-which may be needed for larger applications):
-
-    $ ./micropython --help
-
-Run complete testsuite:
-
-    $ make test
-
-Unix version comes with a builtin package manager called upip, e.g.:
-
-    $ ./micropython -m upip install micropython-pystone
-    $ ./micropython -m pystone
 
 Browse available modules on
 [PyPI](https://pypi.python.org/pypi?%3Aaction=search&term=micropython).
