@@ -22,9 +22,9 @@ INC += -I$(VEGA_SDK)/devices/RV32M1/utilities
 
 ASM_SRCS += $(VEGA_SDK)/devices/RV32M1/gcc/startup_RV32M1_ri5cy.S 
 
-DBFLAGS = -DDEBUG -DCPU_RV32M1_ri5cy -DPRINTF_FLOAT_ENABLE=0 -DSCANF_FLOAT_ENABLE=0 -DPRINTF_ADVANCED_ENABLE=0 -DSCANF_ADVANCED_ENABLE=0
-CFLAGS = $(INC) $(DBFLAGS) -msmall-data-limit=8 -mno-save-restore -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -ffreestanding -fno-builtin -Wall -g -std=gnu99 -march=rv32imcxpulpv2 -Wa,-march=rv32imcxpulpv2
-LDFLAGS = -T RV32M1_ri5cy_flash.ld -nostdlib -Xlinker --gc-sections -Wl,-Map,micropython.map -march=rv32imcxpulpv2 -Xlinker -static -Xlinker -z -Xlinker muldefs -Xlinker -static -Xlinker -z -Xlinker muldefs
+DBFLAGS = -DNDEBUG -DCPU_RV32M1_ri5cy -DPRINTF_FLOAT_ENABLE=0 -DSCANF_FLOAT_ENABLE=0 -DPRINTF_ADVANCED_ENABLE=0 -DSCANF_ADVANCED_ENABLE=0
+CFLAGS = $(INC) $(DBFLAGS) -O1 -msmall-data-limit=8 -mno-save-restore -flto -fmessage-length=0 -fsigned-char -fno-common -ffreestanding -fno-builtin -fno-strict-aliasing -std=gnu99 -march=rv32imcxpulpv2 -Wa,-march=rv32imcxpulpv2
+LDFLAGS = -T RV32M1_ri5cy_flash.ld -nostdlib -flto -O1 -Wl,-Map,micropython.map -march=rv32imcxpulpv2 -Xlinker -static -Xlinker -z -Xlinker muldefs -Xlinker -static -Xlinker -z -Xlinker muldefs
 LIBS = -lnosys -lgcc -lc -lm -lm -lg -lgcc -lnosys -Xlinker --end-group 
 
 SRC_C = \
